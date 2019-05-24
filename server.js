@@ -60,14 +60,30 @@ io.on('connection', socket => {
   console.log('A user has connected');
 });
 //var socket = io();
-
+/*
 var currentUsers = 0;
     io.on('connection', socket => {
       console.log('A user has connected');
       ++currentUsers;
       io.emit('user count', currentUsers);
-    });
+      
+    
 
+      
+      
+    });*/
+var currentUsers = 0;
+io.on('connection', (socket) => {
+  console.log('A user has connected');
+  ++currentUsers;
+  io.emit('user count', currentUsers);
+  socket.on('disconnect', () => {
+    console.log('A user has disconnected');
+    --currentUsers;
+    io.emit('user count', currentUsers);
+  });
+});
+  
 
 
 app.set('view engine', 'pug');
