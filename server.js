@@ -61,6 +61,15 @@ io.on('connection', socket => {
 });
 //var socket = io();
 
+var currentUsers = 0;
+    io.on('connection', socket => {
+      console.log('A user has connected');
+      ++currentUsers;
+      io.emit('user count', currentUsers);
+    });
+
+
+
 app.set('view engine', 'pug');
 
 fccTesting(app); //For FCC testing purposes
