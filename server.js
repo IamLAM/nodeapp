@@ -10,6 +10,7 @@ const ObjectID      = require('mongodb').ObjectID;
 const LocalStrategy = require('passport-local');
 const routes = require('./routes.js');
 const auth= require('./auth.js');
+const GitHubStrategy = require('passport-github').Strategy;
 /*
 const bcrypt        = require('bcrypt');
 let comparePassword;
@@ -98,6 +99,50 @@ mongo.connect(process.env.DATABASE, (err, connection) => {
     const db = connection.db();
     auth(app, db);
     routes(app, db);
+    
+    //////////////////////////
+    passport.use(new GitHubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: "https://nodeapp2.glitch.me/auth/github/callback"/*INSERT CALLBACK URL ENTERED INTO GITHUB HERE*/
+  },
+  function(accessToken, refreshToken, profile, cb) {
+      console.log(profile);
+      //Database logic here with callback containing our user object
+      db.collection('socialusers').findAndModify(
+                  {id: profile.id},
+                  {},
+                  {$setOnInsert:{
+                      id: profile.id,
+                      name: profile.displayName || 'John Doe',
+                      photo: profile.photos[0].value || '',
+                      email: profile.emails[0].value || 'No public email',
+                      created_on: new Date(),
+                      provider: profile.provider || ''
+                  },$set:{
+                      last_login: new Date()
+                  },$inc:{
+                      login_count: 1
+                  }},
+                  {upsert:true, new: true}, //Insert object if not found, Return new object after modify
+                  (err, doc) => {
+                      return cb(null, doc.value);
+                  }
+              );
+      
+      
+      
+      
+  }
+));
+  
+    
+    
+    
+    
+    ///////////////////////////
+    
+    
 /*
   app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -196,6 +241,7 @@ mongo.connect(process.env.DATABASE, (err, connection) => {
         res.redirect('/profile');
     });
 
+    
 
     app.use((req, res, next) => {
       res.status(404).type('text').send('Not Found');
