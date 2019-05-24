@@ -8,8 +8,8 @@ const passport      = require('passport');
 const session       = require('express-session');
 const ObjectID      = require('mongodb').ObjectID;
 const LocalStrategy = require('passport-local');
-
-
+const routes = require('./routes.js');
+/*
 const bcrypt        = require('bcrypt');
 let comparePassword;
 let newHash;
@@ -41,13 +41,13 @@ switch (process.env.HASHING) {
       cb(null, password);
     }
     break;
-}
+}*/
 
-
+/*
 function ensureAuthenticated (req, res, next) {
   if (req.isAuthenticated()) return next();
   res.redirect('/');
-}
+}*/
 
 const app = express();
 app.set('view engine', 'pug');
@@ -126,7 +126,7 @@ mongo.connect(process.env.DATABASE, (err, connection) => {
       }
     );
   }));
-
+/*
     app.route('/').get((req, res) => res.render(
       process.cwd() + '/views/pug/index.pug',
       {
@@ -180,7 +180,7 @@ mongo.connect(process.env.DATABASE, (err, connection) => {
         successRedirect: '/profile',
         failureRedirect: '/'
       })
-    );
+    );*/
 
     app.use((req, res, next) => {
       res.status(404).type('text').send('Not Found');
