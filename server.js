@@ -11,6 +11,7 @@ const LocalStrategy = require('passport-local');
 const routes = require('./routes.js');
 const auth= require('./auth.js');
 const GitHubStrategy = require('passport-github').Strategy;
+
 /*
 const bcrypt        = require('bcrypt');
 let comparePassword;
@@ -52,6 +53,14 @@ function ensureAuthenticated (req, res, next) {
 }*/
 
 const app = express();
+const http        = require('http').Server(app);
+const io = require('socket.io')(http);
+
+io.on('connection', socket => {
+  console.log('A user has connected');
+});
+//var socket = io();
+
 app.set('view engine', 'pug');
 
 fccTesting(app); //For FCC testing purposes
