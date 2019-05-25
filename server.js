@@ -90,6 +90,13 @@ io.on('connection', (socket) => {
   io.emit('user', {name: io.request.user.name, currentUsers, connected: true});
   
   
+  
+  socket.on('chat message', (message) => {
+        io.emit('chat message', {name: socket.request.user.name, message});
+      });
+  
+  
+  
   socket.on('disconnect', () => {
     console.log('A user has disconnected');
     --currentUsers;
