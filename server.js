@@ -10,8 +10,11 @@ const ObjectID      = require('mongodb').ObjectID;
 const LocalStrategy = require('passport-local');
 const routes = require('./routes.js');
 const auth= require('./auth.js');
+//const passportSocketIo=('passportSocketIo');
+const passportSocketIo = require("passport.socketio");
 const GitHubStrategy = require('passport-github').Strategy;
-
+const cookieParser = require('cookie-parser');
+const sessionStore=require('session-store');
 /*
 const bcrypt        = require('bcrypt');
 let comparePassword;
@@ -72,15 +75,27 @@ var currentUsers = 0;
       
       
     });*/
+
+io.use(passportSocketIo.authorize({
+  cookieParser: cookieParser,
+  key:          'express.sid',
+  secret:       process.env.SESSION_SECRET,
+  store:        sessionStore
+}));
 var currentUsers = 0;
 io.on('connection', (socket) => {
   console.log('A user has connected');
   ++currentUsers;
-  io.emit('user count', currentUsers);
+ // io.emit('user count', currentUsers);
+  io.emit('user', {name: io.request.user.name, currentUsers, connected: true});
+  
+  
   socket.on('disconnect', () => {
     console.log('A user has disconnected');
     --currentUsers;
-    io.emit('user count', currentUsers);
+    //io.emit('user count', currentUsers);
+    io.emit('user', {name: io.request.user.name, currentUsers, connected: false});
+  
   });
 });
   
